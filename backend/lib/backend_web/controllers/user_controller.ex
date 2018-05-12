@@ -3,6 +3,6 @@ defmodule Backend.UserController do
 
   def index(conn, _params) do
     users = Backend.Repo.all(Backend.User)
-    json conn, users
+    json conn, %{ payload: users }
   end
 end
