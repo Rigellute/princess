@@ -5,7 +5,7 @@ defmodule BackendWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", PrincessApi do
+  scope "/api", Backend do
     pipe_through :api
 
     resources "/users", UserController
