@@ -1,8 +1,16 @@
 # Backend
 
-## Installing Phoenix
+## Installation
 
 Follow the Phoenix installation guide: https://hexdocs.pm/phoenix/installation.html
+
+Install postgresql and set up database:
+
+```
+brew install postgresql
+createuser admin --createdb
+createdb backend_dev -U admin
+```
 
 ## Starting Phoenix server
 
