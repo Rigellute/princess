@@ -1,11 +1,17 @@
 defmodule Backend.Repo do
-  use Ecto.Repo, otp_app: :backend
+  # use Ecto.Repo, otp_app: :backend
 
-  @doc """
-  Dynamically loads the repository url from the
-  DATABASE_URL environment variable.
-  """
-  def init(_, opts) do
-    {:ok, Keyword.put(opts, :url, System.get_env("DATABASE_URL"))}
+  def start_link do
+    {:ok, self()}
   end
+
+  def all(Backend.User) do
+    [
+      %Backend.User{first_name: "Alexander",
+                        last_name: "Keliris"},
+      %Backend.User{first_name: "Anicka",
+                        last_name: "Doubkova"},
+    ]
+  end
+
 end
