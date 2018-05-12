@@ -1,13 +1,8 @@
-defmodule PrincessApi.UserController do
+defmodule Backend.UserController do
   use BackendWeb, :controller
 
   def index(conn, _params) do
-    users = [
-      %{first_name: "Alexander",
-        last_name: "Keliris"},
-      %{first_name: "Anicka",
-        last_name: "Doubkova"},
-    ]
-    json conn, users
+    users = Backend.Repo.all(Backend.User)
+    json conn, %{ payload: users }
   end
 end
