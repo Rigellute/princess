@@ -25,6 +25,15 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
 
+## Populating user database
+
+In your terminal of choice go into the Elixir console using `iex -S mix`. Then run
+
+```
+iex(1)> alias Backend.{Repo, User}
+iex(2)> Repo.insert(%User{first_name: "Name", last_name: "Surname"})
+```
+
 ## Learn more
 
 * Official website: http://www.phoenixframework.org/
