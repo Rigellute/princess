@@ -7,6 +7,10 @@ type user = {
     last_name: string,
 };
 
+type usersApiResponse = {
+    payload: list(user),
+};
+
 type state =
   | Loading
   | Error
@@ -24,7 +28,9 @@ module Decode = {
             last_name: json |> field("last_name", string),
         };
 
-    let users = Json.Decode.list(userItem);
+    let users = json => Json.Decode.{
+        payload: json |> field("payload", list(userItem))
+    };
 };
 
 let component = ReasonReact.reducerComponent("App");
@@ -42,11 +48,13 @@ let reducer = (action, _state) => switch action {
                      json
                      /* |> Json.parseOrRaise */
                      |> Decode.users
-                     |> (users => self.send(UsersFetched(users)))
+                     |> (users => self.send(UsersFetched(users.payload)))
                      |> resolve
                    )
-                  |> catch(_err =>
-                       Js.Promise.resolve(self.send(UsersFailedToFetch))
+                  |> catch(_err => {
+                      Js.log(_err);
+                      Js.Promise.resolve(self.send(UsersFailedToFetch));
+                  }
                      )
                   |> ignore
                 )
@@ -56,45 +64,27 @@ let reducer = (action, _state) => switch action {
         | UsersFailedToFetch => ReasonReact.Update(Error)
 };
 
-/* module User = {
+module User = {
   let component = ReasonReact.statelessComponent("User");
-  let make = (~userState, children) => {
+  let make = (~userState, _children) => {
     ...component,
     render: (_self) =>
-        switch (self.state) {
+        switch (userState) {
         | Error => <div> (ReasonReact.string("An error occurred!")) </div>
         | Loading => <div> (ReasonReact.string("Loading...")) </div>
-        | Loaded(users) =>
-          <div>
-            <h1> (ReasonReact.string("Users")) </h1>>
-            <ul>
-              (
-                Array.map(users, user =>
-                  <li key=user> (ReasonReact.string(user.first_name)) </li>
-                )
-                |> ReasonReact.array
-              )
-            </ul>
-          </div>
+        | Loaded(users) => (
+            <div>
+                <h1> (ReasonReact.string("Users")) </h1>
+                (
+          ReasonReact.arrayToElement(Array.of_list(
+              List.map((user) => (
+                  <p>(ReasonReact.string(user.first_name ++ " " ++ user.last_name))</p>), users)
+          ))
+        )
+            </div>
+        )
       },
   };
-}; */
-
-let getUsers = (appState: state) => switch (appState) {
-| Error => <div> (ReasonReact.string("An error occurred!")) </div>
-| Loading => <div> (ReasonReact.string("Loading...")) </div>
-| Loaded(users) =>
-  <div>
-    <h1> (ReasonReact.string("Users")) </h1>>
-    <ul>
-      (
-        Array.map(users, user =>
-          <li key=user> (ReasonReact.string(user.first_name)) </li>
-        )
-        |> ReasonReact.array
-      )
-    </ul>
-  </div>
 };
 
 let make = _children => {
@@ -111,6 +101,6 @@ let make = _children => {
       <p className="App-intro">
         (ReasonReact.string("Frontend is Reason and React, backend is Elixir and Phoenix"))
       </p>
-      <div>(getUsers(self.state))</div>
+      <User userState=self.state/>
     </div>,
 };
